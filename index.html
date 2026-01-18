@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Busca de Filmes (TMDB + RPDB)</title>
+  <title>Busca de Filmes e Séries (TMDB + RPDB)</title>
   <style>
     :root{
-      --bg:#0b0f14; --card:#121824; --card2:#0f1520; --text:#e7eefc; --muted:#9fb0cc;
+      --bg:#0b0f14; --text:#e7eefc; --muted:#9fb0cc;
       --accent:#6aa9ff; --border:rgba(255,255,255,.09); --shadow: 0 10px 30px rgba(0,0,0,.35);
       --radius:18px;
     }
@@ -19,13 +19,10 @@
       color:var(--text);
       min-height:100vh;
     }
-    header{
-      padding:28px 18px 12px;
-      max-width:1100px;
-      margin:0 auto;
-    }
+    header{ padding:28px 18px 12px; max-width:1100px; margin:0 auto; }
     h1{margin:0 0 8px; font-size: clamp(22px, 3vw, 34px); letter-spacing:.2px;}
     p{margin:0; color:var(--muted); line-height:1.35}
+
     .bar{
       margin-top:16px;
       display:flex; gap:10px; align-items:center;
@@ -35,9 +32,10 @@
       padding:10px;
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
+      flex-wrap: wrap;
     }
     .bar input{
-      flex:1;
+      flex:1 1 260px;
       border:none; outline:none;
       background: transparent;
       color:var(--text);
@@ -57,6 +55,29 @@
     }
     .bar button:active{transform: scale(.98)}
     .bar button:hover{filter: brightness(1.05)}
+
+    .seg{
+      display:flex; gap:6px;
+      padding:6px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      flex: 0 0 auto;
+    }
+    .seg button{
+      background: transparent;
+      color: var(--muted);
+      border:1px solid transparent;
+      padding:8px 10px;
+      border-radius:999px;
+      font-weight:700;
+    }
+    .seg button.active{
+      color: var(--text);
+      border-color: rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+    }
+
     .meta{
       display:flex; gap:12px; flex-wrap:wrap;
       margin-top:10px; color:var(--muted); font-size:13px;
@@ -68,18 +89,8 @@
       border-radius:999px;
     }
 
-    main{
-      max-width:1100px;
-      margin: 0 auto;
-      padding: 16px 18px 34px;
-    }
-
-    .status{
-      margin: 14px 0 10px;
-      color: var(--muted);
-      font-size:14px;
-      min-height: 20px;
-    }
+    main{ max-width:1100px; margin: 0 auto; padding: 16px 18px 34px; }
+    .status{ margin: 14px 0 10px; color: var(--muted); font-size:14px; min-height: 20px; }
 
     .grid{
       display:grid;
@@ -110,9 +121,7 @@
       display:block;
       background: rgba(255,255,255,.05);
     }
-    .card .info{
-      padding: 10px 10px 12px;
-    }
+    .card .info{ padding: 10px 10px 12px; }
     .title{
       margin:0 0 6px;
       font-size:14px;
@@ -127,6 +136,15 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+      align-items:center;
+    }
+    .tag{
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.35);
+      color: #eaf1ff;
     }
     .badge{
       position:absolute;
@@ -178,15 +196,14 @@
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.05);
     }
-    .right{
-      padding: 16px 18px 18px;
-    }
+    .right{ padding: 16px 18px 18px; }
     .modal h2{margin:0 0 8px; font-size: 20px}
     .modal .row{
       display:flex; gap:10px; flex-wrap:wrap;
       margin-bottom: 10px;
       color: var(--muted);
       font-size: 13px;
+      align-items:center;
     }
     .pill{
       background: rgba(255,255,255,.04);
@@ -231,18 +248,23 @@
 
 <body>
   <header>
-    <h1>Pesquisar filmes 🎬</h1>
+    <h1>Pesquisar filmes e séries 🎬📺</h1>
     <p>Digite um título, veja os pôsteres e clique para abrir a sinopse.</p>
 
     <div class="bar">
-      <input id="q" type="search" placeholder="Ex.: Interestelar, Parasita, Cidade de Deus..." autocomplete="off" />
-      <button id="btn">Pesquisar</button>
+      <input id="q" type="search" placeholder="Ex.: Interestelar, The Last of Us, Dark..." autocomplete="off" />
+      <div class="seg" aria-label="Tipo de busca">
+        <button id="tabAll" class="active" type="button">Tudo</button>
+        <button id="tabMovie" type="button">Filmes</button>
+        <button id="tabTv" type="button">Séries</button>
+      </div>
+      <button id="btn" type="button">Pesquisar</button>
     </div>
 
     <div class="meta">
-      <span class="chip">Fonte: TMDB (dados) + RPDB (pôster com nota)</span>
+      <span class="chip">Fonte: TMDB (dados) + RPDB (pôster)</span>
       <span class="chip">Atalho: <span class="kbd">Enter</span> para buscar</span>
-      <span class="chip">Dica: clique fora do modal ou <span class="kbd">Esc</span> para fechar</span>
+      <span class="chip">Fechar: clique fora ou <span class="kbd">Esc</span></span>
     </div>
   </header>
 
@@ -251,21 +273,20 @@
     <section id="grid" class="grid" aria-live="polite"></section>
 
     <div class="footer-note">
-      Observação rápida: colocar chaves de API direto no front-end é ok para protótipo, mas em um projeto “de verdade”
-      o ideal é usar um backend (proxy) para não expor a chave.
+      Observação: chaves de API no front-end servem para protótipo. Em produção, use um backend (proxy) para esconder a chave.
     </div>
   </main>
 
   <!-- Modal -->
-  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Detalhes do filme">
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Detalhes">
     <div class="modal" role="document">
       <div class="left">
-        <img id="mPoster" alt="Pôster do filme" />
+        <img id="mPoster" alt="Pôster" />
       </div>
       <div class="right">
         <div style="display:flex; gap:10px; align-items:center;">
           <h2 id="mTitle" style="margin-right:auto;"></h2>
-          <button class="close" id="mClose" aria-label="Fechar">Fechar</button>
+          <button class="close" id="mClose" aria-label="Fechar" type="button">Fechar</button>
         </div>
         <div class="row" id="mMeta"></div>
         <p class="overview" id="mOverview"></p>
@@ -278,20 +299,19 @@
     const TMDB_KEY = "7a8a912dd55c9e4430e91fd33b8a8349";
     const RPDB_KEY = "t0-free-rpdb";
 
-    // RPDB (padrão): exemplos documentados pela comunidade mostram:
-    // TMDB:  https://api.ratingposterdb.com/<key>/tmdb/poster-default/movie-<tmdbId>.jpg
-    // IMDB:  https://api.ratingposterdb.com/<key>/imdb/poster-default/<imdbId>.jpg?fallback=true
-    // Exemplo público: :contentReference[oaicite:0]{index=0}
-    //
-    // Aqui vamos usar TMDB id direto para o pôster (é mais simples e não exige converter para imdb_id).
-    function rpdbPosterFromTmdbId(tmdbId){
+    // Filmes: RPDB via TMDB id funciona bem (movie-<id>)
+    function rpdbMoviePosterFromTmdbId(tmdbId){
       return `https://api.ratingposterdb.com/${RPDB_KEY}/tmdb/poster-default/movie-${tmdbId}.jpg`;
     }
 
-    // Fallback de imagem (TMDB oficial)
+    // Séries: para evitar pôster “trocado”, pegamos o imdb_id no TMDB e usamos RPDB via IMDB (bem mais consistente)
+    function rpdbPosterFromImdbId(imdbId){
+      // fallback=true ajuda quando o RPDB ainda não gerou/cacheou algo
+      return `https://api.ratingposterdb.com/${RPDB_KEY}/imdb/poster-default/${imdbId}.jpg?fallback=true`;
+    }
+
+    // Fallback do TMDB (pôster oficial)
     function tmdbPosterFallback(posterPath){
-      // Não precisa chamar /configuration para um protótipo: usamos base estável (w500).
-      // (A docs do TMDB explica o conceito de base_url/size/path.) :contentReference[oaicite:1]{index=1}
       return posterPath ? `https://image.tmdb.org/t/p/w500${posterPath}` : "";
     }
 
@@ -306,21 +326,22 @@
       mMeta: document.getElementById("mMeta"),
       mOverview: document.getElementById("mOverview"),
       mClose: document.getElementById("mClose"),
+      tabAll: document.getElementById("tabAll"),
+      tabMovie: document.getElementById("tabMovie"),
+      tabTv: document.getElementById("tabTv"),
     };
 
-    let lastResults = [];
+    // Estado
+    let mode = "multi"; // "multi" | "movie" | "tv"
+    let lastResults = []; // itens normalizados
+    const tvImdbCache = new Map(); // tmdbTvId -> imdbId (ou null)
 
     // ====== HELPERS ======
     const fmtYear = (dateStr) => (dateStr && dateStr.length >= 4) ? dateStr.slice(0,4) : "—";
     const fmtRating = (v) => (typeof v === "number" && !Number.isNaN(v)) ? v.toFixed(1) : "—";
 
-    function setStatus(msg){
-      els.status.textContent = msg || "";
-    }
-
-    function clearGrid(){
-      els.grid.innerHTML = "";
-    }
+    function setStatus(msg){ els.status.textContent = msg || ""; }
+    function clearGrid(){ els.grid.innerHTML = ""; }
 
     function escapeHTML(str){
       return (str ?? "").replace(/[&<>"']/g, (c) => ({
@@ -328,71 +349,138 @@
       }[c]));
     }
 
-    // ====== TMDB SEARCH ======
-    async function searchMovies(query){
-      const url = new URL("https://api.themoviedb.org/3/search/movie");
+    function setMode(newMode){
+      mode = newMode;
+      els.tabAll.classList.toggle("active", mode === "multi");
+      els.tabMovie.classList.toggle("active", mode === "movie");
+      els.tabTv.classList.toggle("active", mode === "tv");
+    }
+
+    function normalizeItem(kind, raw){
+      return {
+        kind, // "movie" | "tv"
+        id: raw.id,
+        title: kind === "movie" ? raw.title : raw.name,
+        date:  kind === "movie" ? raw.release_date : raw.first_air_date,
+        vote_average: raw.vote_average,
+        vote_count: raw.vote_count,
+        original_language: raw.original_language,
+        overview: raw.overview,
+        poster_path: raw.poster_path,
+        popularity: raw.popularity ?? 0
+      };
+    }
+
+    // ====== TMDB CALLS ======
+    async function tmdbSearch(endpoint, query){
+      const url = new URL(`https://api.themoviedb.org/3/${endpoint}`);
       url.searchParams.set("api_key", TMDB_KEY);
       url.searchParams.set("query", query);
       url.searchParams.set("language", "pt-BR");
       url.searchParams.set("include_adult", "false");
 
       const res = await fetch(url.toString());
-      if(!res.ok){
-        throw new Error(`Erro TMDB (${res.status})`);
-      }
+      if(!res.ok) throw new Error(`Erro TMDB (${res.status}) em ${endpoint}`);
       const data = await res.json();
       return data.results || [];
     }
 
+    async function searchMovies(query){ return tmdbSearch("search/movie", query); }
+    async function searchTv(query){ return tmdbSearch("search/tv", query); }
+
+    async function getTvExternalIds(tvId){
+      // https://api.themoviedb.org/3/tv/{tv_id}/external_ids?api_key=...
+      const url = new URL(`https://api.themoviedb.org/3/tv/${tvId}/external_ids`);
+      url.searchParams.set("api_key", TMDB_KEY);
+      const res = await fetch(url.toString());
+      if(!res.ok) return null;
+      return res.json();
+    }
+
+    async function getTvImdbId(tvId){
+      if(tvImdbCache.has(tvId)) return tvImdbCache.get(tvId);
+      const data = await getTvExternalIds(tvId);
+      const imdbId = data && data.imdb_id ? data.imdb_id : null;
+      tvImdbCache.set(tvId, imdbId);
+      return imdbId;
+    }
+
+    // ====== POSTER RESOLUTION ======
+    async function setSeriesPoster(imgEl, tvId, posterPath){
+      const fallbackUrl = tmdbPosterFallback(posterPath);
+
+      // mostra fallback do TMDB primeiro (rápido)
+      if (fallbackUrl) imgEl.src = fallbackUrl;
+
+      // tenta trocar para RPDB via IMDB (mais correto)
+      const imdbId = await getTvImdbId(tvId);
+      if(!imdbId) return;
+
+      const rpdbUrl = rpdbPosterFromImdbId(imdbId);
+      // quando trocar, mantém fallback se der erro
+      imgEl.onerror = () => {
+        if (fallbackUrl && imgEl.src !== fallbackUrl) imgEl.src = fallbackUrl;
+      };
+      imgEl.src = rpdbUrl;
+    }
+
+    function setMoviePoster(imgEl, movieId, posterPath){
+      const rpdbUrl = rpdbMoviePosterFromTmdbId(movieId);
+      const fallbackUrl = tmdbPosterFallback(posterPath);
+      imgEl.src = rpdbUrl;
+      imgEl.onerror = () => {
+        if (fallbackUrl && imgEl.src !== fallbackUrl) imgEl.src = fallbackUrl;
+        else imgEl.removeAttribute("src");
+      };
+    }
+
     // ====== RENDER ======
-    function renderResults(results){
+    function renderResults(items){
       clearGrid();
 
-      if(!results.length){
+      if(!items.length){
         setStatus("Nenhum resultado encontrado.");
         return;
       }
 
       const frag = document.createDocumentFragment();
 
-      results.forEach((m, idx) => {
+      items.forEach((it, idx) => {
         const card = document.createElement("article");
         card.className = "card";
         card.tabIndex = 0;
         card.setAttribute("role", "button");
-        card.setAttribute("aria-label", `Abrir sinopse de ${m.title}`);
+        card.setAttribute("aria-label", `Abrir sinopse de ${it.title}`);
 
         const img = document.createElement("img");
         img.className = "poster";
-        img.alt = `Pôster de ${m.title}`;
+        img.alt = `Pôster de ${it.title}`;
         img.loading = "lazy";
 
-        const rpdbUrl = rpdbPosterFromTmdbId(m.id);
-        const fallbackUrl = tmdbPosterFallback(m.poster_path);
-
-        // Tenta RPDB primeiro; se falhar, cai pro pôster do TMDB.
-        img.src = rpdbUrl;
-        img.onerror = () => {
-          if (fallbackUrl && img.src !== fallbackUrl) img.src = fallbackUrl;
-          else img.removeAttribute("src");
-        };
+        if(it.kind === "movie"){
+          setMoviePoster(img, it.id, it.poster_path);
+        }else{
+          // Séries: usar IMDB->RPDB (corrige os pôsteres trocados)
+          setSeriesPoster(img, it.id, it.poster_path);
+        }
 
         const badge = document.createElement("div");
         badge.className = "badge";
-        badge.textContent = `★ ${fmtRating(m.vote_average)}`;
+        badge.textContent = `★ ${fmtRating(it.vote_average)}`;
 
         const info = document.createElement("div");
         info.className = "info";
 
         const h = document.createElement("h3");
         h.className = "title";
-        h.innerHTML = escapeHTML(m.title);
+        h.innerHTML = escapeHTML(it.title);
 
         const sub = document.createElement("p");
         sub.className = "sub";
-        const year = fmtYear(m.release_date);
-        const lang = (m.original_language || "—").toUpperCase();
-        sub.innerHTML = `<span>${year}</span><span>•</span><span>${lang}</span>`;
+        const year = fmtYear(it.date);
+        const lang = (it.original_language || "—").toUpperCase();
+        const tag = it.kind === "movie" ? "FILME" : "SÉRIE";
+        sub.innerHTML = `<span class="tag">${tag}</span><span>${year}</span><span>•</span><span>${lang}</span>`;
 
         info.appendChild(h);
         info.appendChild(sub);
@@ -414,39 +502,53 @@
       });
 
       els.grid.appendChild(frag);
-      setStatus(`${results.length} resultado(s). Clique em um pôster para ver a sinopse.`);
+      setStatus(`${items.length} resultado(s). Clique em um pôster para ver a sinopse.`);
     }
 
     // ====== MODAL ======
-    function openModal(index){
-      const m = lastResults[index];
-      if(!m) return;
+    async function openModal(index){
+      const it = lastResults[index];
+      if(!it) return;
 
-      const rpdbUrl = rpdbPosterFromTmdbId(m.id);
-      const fallbackUrl = tmdbPosterFallback(m.poster_path);
+      const fallbackUrl = tmdbPosterFallback(it.poster_path);
 
-      els.mPoster.src = rpdbUrl;
-      els.mPoster.onerror = () => {
-        if (fallbackUrl && els.mPoster.src !== fallbackUrl) els.mPoster.src = fallbackUrl;
-      };
+      // Preenche texto
+      const kindLabel = it.kind === "movie" ? "Filme" : "Série";
+      els.mTitle.textContent = `${it.title || "Sem título"} (${kindLabel})`;
 
-      els.mTitle.textContent = m.title || "Sem título";
-      const year = fmtYear(m.release_date);
-      const rating = fmtRating(m.vote_average);
-      const votes = (typeof m.vote_count === "number") ? m.vote_count.toLocaleString("pt-BR") : "—";
-      const lang = (m.original_language || "—").toUpperCase();
+      const year = fmtYear(it.date);
+      const rating = fmtRating(it.vote_average);
+      const votes = (typeof it.vote_count === "number") ? it.vote_count.toLocaleString("pt-BR") : "—";
+      const lang = (it.original_language || "—").toUpperCase();
 
       els.mMeta.innerHTML = `
+        <span class="pill">Tipo: <b>${escapeHTML(kindLabel)}</b></span>
         <span class="pill">Ano: <b>${escapeHTML(year)}</b></span>
         <span class="pill">Nota TMDB: <b>${escapeHTML(rating)}</b></span>
         <span class="pill">Votos: <b>${escapeHTML(votes)}</b></span>
         <span class="pill">Idioma original: <b>${escapeHTML(lang)}</b></span>
       `;
 
-      const overview = (m.overview && m.overview.trim())
-        ? m.overview.trim()
+      const overview = (it.overview && it.overview.trim())
+        ? it.overview.trim()
         : "Sem sinopse disponível em pt-BR para este título.";
       els.mOverview.textContent = overview;
+
+      // Poster no modal
+      if(it.kind === "movie"){
+        const rpdbUrl = rpdbMoviePosterFromTmdbId(it.id);
+        els.mPoster.src = rpdbUrl;
+        els.mPoster.onerror = () => { if (fallbackUrl) els.mPoster.src = fallbackUrl; };
+      }else{
+        // Séries: IMDB->RPDB
+        els.mPoster.src = fallbackUrl || "";
+        const imdbId = await getTvImdbId(it.id);
+        if(imdbId){
+          const rpdbUrl = rpdbPosterFromImdbId(imdbId);
+          els.mPoster.onerror = () => { if (fallbackUrl) els.mPoster.src = fallbackUrl; };
+          els.mPoster.src = rpdbUrl;
+        }
+      }
 
       els.overlay.classList.add("open");
       document.body.style.overflow = "hidden";
@@ -459,7 +561,6 @@
     }
 
     els.overlay.addEventListener("click", (e) => {
-      // Clique fora do conteúdo fecha
       if(e.target === els.overlay) closeModal();
     });
     els.mClose.addEventListener("click", closeModal);
@@ -480,10 +581,24 @@
       clearGrid();
 
       try{
-        const results = await searchMovies(query);
-        // Ordena por popularidade (desc), só pra ficar mais “legal”
-        results.sort((a,b) => (b.popularity||0) - (a.popularity||0));
-        lastResults = results.slice(0, 24); // limite pra ficar leve
+        let items = [];
+
+        if(mode === "movie"){
+          const movies = await searchMovies(query);
+          items = movies.map(m => normalizeItem("movie", m));
+        }else if(mode === "tv"){
+          const tvs = await searchTv(query);
+          items = tvs.map(t => normalizeItem("tv", t));
+        }else{
+          const [movies, tvs] = await Promise.all([searchMovies(query), searchTv(query)]);
+          items = [
+            ...movies.map(m => normalizeItem("movie", m)),
+            ...tvs.map(t => normalizeItem("tv", t)),
+          ];
+        }
+
+        items.sort((a,b) => (b.popularity||0) - (a.popularity||0));
+        lastResults = items.slice(0, 30);
         renderResults(lastResults);
       }catch(err){
         console.error(err);
@@ -491,13 +606,16 @@
       }
     }
 
-    els.btn.addEventListener("click", doSearch);
-    els.q.addEventListener("keydown", (e) => {
-      if(e.key === "Enter") doSearch();
-    });
+    // Tabs
+    els.tabAll.addEventListener("click", () => { setMode("multi"); doSearch(); });
+    els.tabMovie.addEventListener("click", () => { setMode("movie"); doSearch(); });
+    els.tabTv.addEventListener("click", () => { setMode("tv"); doSearch(); });
 
-    // Um exemplo inicial (opcional): pode comentar se quiser começar vazio
-    els.q.value = "Homem-Aranha";
+    els.btn.addEventListener("click", doSearch);
+    els.q.addEventListener("keydown", (e) => { if(e.key === "Enter") doSearch(); });
+
+    // Exemplo inicial
+    els.q.value = "Dark";
     doSearch();
   </script>
 </body>
